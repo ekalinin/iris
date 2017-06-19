@@ -1,498 +1,227 @@
-# History
+# FAQ
 
-## 3.0.0-rc.2 -> 3.0.0-rc.3
+### Looking for free support?
 
-**How to upgrade**: remove your $GOPATH/src/github.com/kataras folder, open your command-line and run `go get -u github.com/kataras/iris/iris`.
+	http://support.iris-go.com
+    https://kataras.rocket.chat/channel/iris
 
+### Looking for previous versions?
 
-**Breaking changes**
-- Move middleware & their configs to the  [iris-contrib/middleware](https://github.com/iris-contrib/middleware) repository
-- Move all plugins & their configs to the [iris-contrib/plugin](https://github.com/iris-contrib/plugin) repository
-- Move the graceful package to the [iris-contrib/graceful](https://github.com/iris-contrib/graceful) repository
-- Move the mail package & its configs to the [iris-contrib/mail](https://github.com/iris-contrib/mail) repository
+    https://github.com/kataras/iris#version
 
-Note 1: iris.Config.Mail doesn't not logger exists, use ` mail.Config` from the `iris-contrib/mail`, and ` service:= mail.New(configs); service.Send(....)`.
 
-Note 2: basicauth middleware's context key changed from `context.GetString("auth")` to ` context.GetString("user")`.
+### Should I upgrade my Iris?
 
-Underline changes, libraries used by iris' base code:
-- Move the errors package to the [iris-contrib/errors](https://github.com/iris-contrib/errors) repository
-- Move the tests package to the [iris-contrib/tests](https://github.com/iris-contrib/tests) repository (Yes, you should make PRs now with no fear about breaking the Iris).
+Developers are not forced to upgrade if they don't really need it. Upgrade whenever you feel ready.
+> Iris uses the [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) feature, so you get truly reproducible builds, as this method guards against upstream renames and deletes.
 
-**NEW**:
-- OAuth, OAuth2 support via plugin (facebook,gplus,twitter and 25 more), gitbook section [here](https://kataras.gitbooks.io/iris/content/plugin-oauth.html), plugin [example](https://github.com/iris-contrib/examples/blob/master/plugin_oauth_oauth2/main.go), low-level package example [here](https://github.com/iris-contrib/examples/tree/master/oauth_oauth2) (no performance differences, it's just a working version of [goth](https://github.com/markbates/goth) which is converted to work with Iris)
+**How to upgrade**: Open your command-line and execute this command: `go get -u github.com/kataras/iris`. 
+For further installation support, please click [here](http://support.iris-go.com/d/16-how-to-install-iris-web-framework).
 
-- JSON Web Tokens support via [this middleware](https://github.com/iris-contrib/middleware/tree/master/jwt), book section [here](https://kataras.gitbooks.io/iris/content/jwt.html), as requested [here](https://github.com/kataras/iris/issues/187).
 
-**Fixes**:
-- [Iris run fails when not running from ./](https://github.com/kataras/iris/issues/215)
-- [Fix or disable colors in iris run](https://github.com/kataras/iris/issues/217).
+### About our new home page
+    http://iris-go.com
 
+Thanks to [Santosh Anand](https://github.com/santoshanand) the http://iris-go.com has been upgraded and it's really awesome!
 
-Improvements to the `iris run` **command**, as requested [here](https://github.com/kataras/iris/issues/192).
+[Santosh](https://github.com/santoshanand) is a freelancer, he has a great knowledge of nodejs and express js, Android, iOS, React Native, Vue.js etc, if you need a developer to find or create a solution for your problem or task, please contact with him.
 
-[Book](https://kataras.gitbooks.io/iris/content/) and [examples](https://github.com/iris-contrib/examples) are **updated** also.
 
-## 3.0.0-rc.1 -> 3.0.0-rc.2
+The amount of the next two or three donations you'll send they will be immediately transferred to his own account balance, so be generous please!
 
-New:
-- ` iris.MustUse/MustUseFunc`  - registers middleware for all route parties, all subdomains and all routes.
-- iris control plugin re-written, added real time browser request logger
-- `websocket.OnError` - Add OnError to be able to catch internal errors from the connection
-- [command line tool](https://github.com/kataras/iris/tree/master/iris) - `iris run main.go` runs, watch and reload on source code changes. As requested [here](https://github.com/kataras/iris/issues/192)
 
-Fixes: https://github.com/kataras/iris/issues/184 , https://github.com/kataras/iris/issues/175 .
+# Th, 15 June 2017 | v7.2.0
 
-## 3.0.0-beta.3, 3.0.0-beta.4 -> 3.0.0-rc.1
+### Cache
 
-This version took me many days because the whole framework's underline code is rewritten after many many many 'yoga'. Iris is not so small anymore, so I (tried) to organized it a little better. Note that, today, you can just go to [iris.go](https://github.com/kataras/iris/tree/master/iris.go) and [context.go](https://github.com/kataras/iris/tree/master/context/context.go) and look what functions you can use. You had some 'bugs' to subdomains, mail service, basic authentication and logger, these are fixed also, see below...
+Declare the `iris.Cache alias` to the new, improved and most-suited for common usage, `cache.Handler function`.
 
-All [examples](https://github.com/iris-contrib/examples) are updated, and I tested them one by one.
+`iris.Cache` be used as middleware in the chain now, example [here](_examples/intermediate/cache-markdown/main.go). However [you can still use the cache as a wrapper](cache/cache_test.go) by importing the `github.com/kataras/iris/cache` package. 
 
 
-Many underline changes but the public API didn't changed much, of course this is relative to the way you use this framework, because that:
+### File server
 
-- Configuration changes: **0**
+- **Fix** [that](https://github.com/iris-contrib/community-board/issues/12).
 
-- iris.Iris pointer -> **iris.Framework** pointer
+- `app.StaticHandler(requestPath string, systemPath string, showList bool, gzip bool)` -> `app.StaticHandler(systemPath,showList bool, gzip bool)`
 
-- iris.DefaultIris -> **iris.Default**
-- iris.Config() -> **iris.Config** is field now
-- iris.Websocket() -> **iris.Websocket** is field now
-- iris.Logger() -> **iris.Logger** is field now
-- iris.Plugins() -> **iris.Plugins** is field now
-- iris.Server() -> **iris.HTTPServer** is field now
-- iris.Rest() -> **REMOVED**
+- **New** feature for Single Page Applications, `app.SPA(assetHandler context.Handler)` implemented.
 
-- iris.Mail() -> **REMOVED**
-- iris.Mail().Send() -> **iris.SendMail()**
-- iris.Templates() -> **REMOVED**
-- iris.Templates().RenderString() -> **iris.TemplateString()**
+- **New** `app.StaticEmbeddedHandler(vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string)` added in order to be able to pass that on `app.SPA(app.StaticEmbeddedHandler("./public", Asset, AssetNames))`.
 
-- iris.StaticHandlerFunc -> **iris.StaticHandler**
-- iris.URIOf() -> **iris.URL()**
-- iris.PathOf() -> **iris.Path()**
+- **Fix** `app.StaticEmbedded(requestPath string, vdir string, assetFn func(name string) ([]byte, error), namesFn func() []string)`.
 
-- context.RenderString() returned string,error -> **context.TemplateString() returns only string, which is empty on any parse error**
-- context.WriteHTML() -> **context.HTML()**
-- context.HTML() -> **context.RenderWithStatus()**
+Examples: 
+- [Embedding Files Into Executable App](_examples/beginner/file-server/embedding-files-into-app)
+- [Single Page Application](_examples/beginner/file-server/single-page-application)
+- [Embedding Single Page Application](_examples/beginner/file-server/embedding-single-page-application)
 
-Entirely new
+> [app.StaticWeb](_examples/beginner/file-server/basic/main.go) doesn't works for root request path "/"  anymore, use the new `app.SPA` instead.   
 
--  -> **iris.ListenUNIX(addr string, socket os.Mode)**
--  -> **context.MustRender, same as Render but send response 500 and logs the error on parse error**
--  -> **context.Log(format string, a...interface{})**
--  -> **context.PostFormMulti(name string) []string**
--  -> **iris.Lookups() []Route**
--  -> **iris.Lookup(routeName string) Route**
--  -> **iris.Plugins.On(eventName string, ...func())** and fire all by **iris.Plugins.Call(eventName)**
+### WWW subdomain entry
 
-- iris.Wildcard() **REMOVED**, subdomains and dynamic(wildcard) subdomains can only be registered with **iris.Party("mysubdomain.") && iris.Party("*.")**
+- [Example](_examples/intermediate/subdomains/www/main.go) added to copy all application's routes, including parties, to the `www.mydomain.com`
 
 
-Semantic change for static subdomains
+### Wrapping the Router
 
-**1**
+- [Example](_examples/beginner/routing/custom-wrapper/main.go) added to show you how you can use the `app.WrapRouter` 
+to implement a similar to `app.SPA` functionality, don't panic, it's easier than it sounds.
 
-**BEFORE** :
-```go
-apiSubdomain := iris.Party("api.mydomain.com")
-{
-//....
-}
-iris.Listen("mydomain.com:80")
-```
 
+### Testing
 
-**NOW** just subdomain part, no need to duplicate ourselves:
-```go
-apiSubdomain := iris.Party("api.")
-{
-//....
-}
-iris.Listen("mydomain.com:80")
-```
-**2**
+- `httptest.New(app *iris.Application, t *testing.T)` -> `httptest.New(t *testing.T, app *iris.Application)`.
 
-Before you couldn't set dynamic subdomains and normal subdomains at the same iris station, now you can.
-**NOW, this is possible**
+- **New** `httptest.NewLocalListener() net.Listener` added.
+- **New** `httptest.NewLocalTLSListener(tcpListener net.Listener) net.Listener` added.
 
-```go
-/* admin.mydomain.com,  and for other subdomains the Party(*.) */
+Useful for testing tls-enabled servers: 
 
-admin := iris.Party("admin.")
-{
-	// admin.mydomain.com
-	admin.Get("/", func(c *iris.Context) {
-		c.Write("INDEX FROM admin.mydomain.com")
-	})
-	// admin.mydomain.com/hey
-	admin.Get("/hey", func(c *iris.Context) {
-		c.Write("HEY FROM admin.mydomain.com/hey")
-	})
-	// admin.mydomain.com/hey2
-	admin.Get("/hey2", func(c *iris.Context) {
-		c.Write("HEY SECOND FROM admin.mydomain.com/hey")
-	})
-}
+Proxies are trying to understand local addresses in order to allow `InsecureSkipVerify`.
 
-// other.mydomain.com, otadsadsadsa.mydomain.com  and so on....
-dynamicSubdomains := iris.Party("*.")
-{
-	dynamicSubdomains.Get("/", dynamicSubdomainHandler)
+-  `host.ProxyHandler(target *url.URL) *httputil.ReverseProxy`.
+-  `host.NewProxy(hostAddr string, target *url.URL) *Supervisor`.
+        
+    Tests [here](core/host/proxy_test.go).
 
-	dynamicSubdomains.Get("/something", dynamicSubdomainHandler)
+# Tu, 13 June 2017 | v7.1.1
 
-	dynamicSubdomains.Get("/something/:param1", dynamicSubdomainHandlerWithParam)
-}
-```
+Fix [that](https://github.com/iris-contrib/community-board/issues/11).
 
-Minor change for listen
+# Mo, 12 June 2017 | v7.1.0
 
+Fix [that](https://github.com/iris-contrib/community-board/issues/10).
 
-**BEFORE you could just listen to a port**
-```go
-iris.Listen("8080")
-```
-**NOW you have set a HOSTNAME:PORT**
-```go
-iris.Listen(":8080")
-```
 
-Relative issues/features:  https://github.com/kataras/iris/issues/166 , https://github.com/kataras/iris/issues/176, https://github.com/kataras/iris/issues/183,  https://github.com/kataras/iris/issues/184
+# Su, 11 June 2017 | v7.0.5
 
+Iris now supports static paths and dynamic paths for the same path prefix with zero performance cost:
 
-**Plugins**
+`app.Get("/profile/{id:int}", handler)` and `app.Get("/profile/create", createHandler)` are not in conflict anymore.
 
-PreHandle and PostHandle are removed, no need to use them anymore you can take routes by **iris.Lookups()**, but add support for custom event listeners by **iris.Plugins.On("event",func(){})** and fire all callbacks by **iris.Plugins.Call("event")** .
 
-**FOR TESTERS**
+The rest of the special Iris' routing features, including static & wildcard subdomains are still work like a charm.
 
-**BEFORE** :
-```go
-api := iris.New()
-//...
+> This was one of the most popular community's feature requests. Click [here](https://github.com/kataras/iris/blob/master/_examples/beginner/routing/overview/main.go) to see a trivial example.
 
-api.PreListen(config.Server{ListeningAddr: ""})
+# Sa, 10 June 2017 | v7.0.4
 
-e := httpexpect.WithConfig(httpexpect.Config{
-	Reporter: httpexpect.NewAssertReporter(t),
-	Client:   fasthttpexpect.NewBinder(api.ServeRequest),
-})
+- Simplify and add a test for the [basicauth middleware](https://github.com/kataras/iris/tree/master/middleware/basicauth), no need to be
+stored inside the Context anymore, developers can get the validated user(username and password) via `context.Request().BasicAuth()`. `basicauth.Config.ContextKey` was removed, just remove that field from your configuration, it's useless now. 
 
-```
+# Sa, 10 June 2017 | v7.0.3
 
-**NOW**:
+- New `context.Session().PeekFlash("key")` added, unlike `GetFlash` this will return the flash value but keep the message valid for the next requests too.
+- Complete the [httptest example](https://github.com/iris-contrib/examples/tree/master/httptest).
+- Fix the (marked as deprecated) `ListenLETSENCRYPT` function.
+- Upgrade the [iris-contrib/middleware](https://github.com/iris-contrib/middleware) including JWT, CORS and Secure handlers.
+- Add [OAuth2 example](https://github.com/iris-contrib/examples/tree/master/oauth2) -- showcases the third-party package [goth](https://github.com/markbates/goth) integration with Iris.
 
-```go
-api := iris.New()
-//...
-
-e := httpexpect.WithConfig(httpexpect.Config{
-	Reporter: httpexpect.NewAssertReporter(t),
-	Client:   fasthttpexpect.NewBinder(api.NoListen().Handler),
-})
-
-
-```
-
-## 3.0.0-beta.2 -> 3.0.0-beta.3
-
-- Complete the Jade Template Engine support, {{ render }} and {{ url }} done also.
-
-- Fix Mail().Send
-
-- Iriscontrol plugin: Replace login using session to basic authentication
-
-And other not-too-important fixes
-
-## 3.0.0-beta -> 3.0.0-beta.2
-
-- NEW: Wildcard(dynamic) subdomains, read [here](https://kataras.gitbooks.io/iris/content/subdomains.html)
-
-- NEW: Implement feature request [#165](https://github.com/kataras/iris/issues/165). Routes can now be selected by `a custom name`, and this allows us to use the {{ url "custom-name" "any" "named" "parameters"}}``: For HTML & Amber engines, example [here](https://github.com/iris-contrib/examples/tree/master/templates_9). For PongoEngine, example [here](https://github.com/iris-contrib/examples/tree/master/templates_10_pongo)
-
-- Remove the [x/net/context](https://godoc.org/golang.org/x/net/context), it has been useless after v2.
-
-
-## 3.0.0-alpha.beta -> 3.0.0-beta
-
-
-- New iris.API for easy API declaration, read more [here](https://kataras.gitbooks.io/iris/content/using-handlerapi.html), example [there](https://github.com/iris-contrib/examples/tree/master/api_handler_2).
-
-
-- Add [example](https://github.com/iris-contrib/examples/tree/master/middleware_basicauth_2) and fix the Basic Authentication middleware
-
-## 3.0.0-alpha.6 -> 3.0.0-alpha.beta
-
-- [Implement feature request to add Globals on the pongo2](https://github.com/kataras/iris/issues/145)
-
-- [Implement feature request for static Favicon ](https://github.com/kataras/iris/issues/141)
-
-- Implement a unique easy only-websocket support:
-
-
-
-```go
-OnConnection(func(c websocket.Connection){})
-```
-
-websocket.Connection
-```go
-
-// Receive from the client
-On("anyCustomEvent", func(message string) {})
-On("anyCustomEvent", func(message int){})
-On("anyCustomEvent", func(message bool){})
-On("anyCustomEvent", func(message anyCustomType){})
-On("anyCustomEvent", func(){})
-
-// Receive a native websocket message from the client
-// compatible without need of import the iris-ws.js to the .html
-OnMessage(func(message []byte){})
-
-// Send to the client
-Emit("anyCustomEvent", string)
-Emit("anyCustomEvent", int)
-Emit("anyCustomEvent", bool)
-Emit("anyCustomEvent", anyCustomType)
-
-// Send via native websocket way, compatible without need of import the iris-ws.js to the .html
-EmitMessage([]byte("anyMessage"))
-
-// Send to specific client(s)
-To("otherConnectionId").Emit/EmitMessage...
-To("anyCustomRoom").Emit/EmitMessage...
-
-// Send to all opened connections/clients
-To(websocket.All).Emit/EmitMessage...
-
-// Send to all opened connections/clients EXCEPT this client(c)
-To(websocket.NotMe).Emit/EmitMessage...
-
-// Rooms, group of connections/clients
-Join("anyCustomRoom")
-Leave("anyCustomRoom")
-
-
-// Fired when the connection is closed
-OnDisconnect(func(){})
-
-```
-
-- [Example](https://github.com/iris-contrib/examples/tree/master/websocket)
-- [E-book section](https://kataras.gitbooks.io/iris/content/package-websocket.html)
-
-
-We have some base-config's changed, these configs which are defaulted to true renamed to 'Disable+$oldName'
-```go
-
-		// DisablePathCorrection corrects and redirects the requested path to the registed path
-		// for example, if /home/ path is requested but no handler for this Route found,
-		// then the Router checks if /home handler exists, if yes,
-		// (permant)redirects the client to the correct path /home
-		//
-		// Default is false
-		DisablePathCorrection bool
-
-		// DisablePathEscape when is false then its escapes the path, the named parameters (if any).
-		// Change to true it if you want something like this https://github.com/kataras/iris/issues/135 to work
-		//
-		// When do you need to Disable(true) it:
-		// accepts parameters with slash '/'
-		// Request: http://localhost:8080/details/Project%2FDelta
-		// ctx.Param("project") returns the raw named parameter: Project%2FDelta
-		// which you can escape it manually with net/url:
-		// projectName, _ := url.QueryUnescape(c.Param("project").
-		// Look here: https://github.com/kataras/iris/issues/135 for more
-		//
-		// Default is false
-		DisablePathEscape bool
-
-		// DisableLog turn it to true if you want to disable logger,
-		// Iris prints/logs ONLY errors, so be careful when you enable it
-		DisableLog bool
-
-		// DisableBanner outputs the iris banner at startup
-		//
-		// Default is false
-		DisableBanner bool
-
-```
-
-
-## 3.0.0-alpha.5 -> 3.0.0-alpha.6
-
-Changes:
-	- config/iris.Config().Render.Template.HTMLTemplate.Funcs typeof `[]template.FuncMap` -> `template.FuncMap`
-
-
-Added:
-	- iris.AmberEngine [Amber](https://github.com/eknkc/amber). [View an example](https://github.com/iris-contrib/examples/tree/master/templates_7_html_amber)
-	- iris.JadeEngine [Jade](https://github.com/Joker/jade). [View an example](https://github.com/iris-contrib/examples/tree/master/templates_6_html_jade)
-
-Book section [Render/Templates updated](https://kataras.gitbooks.io/iris/content/render_templates.html)
-
-
-
-## 3.0.0-alpha.4 -> 3.0.0-alpha.5
-
-- [NoLayout support for particular templates](https://github.com/kataras/iris/issues/130#issuecomment-219754335)
-- [Raw Markdown Template Engine](https://kataras.gitbooks.io/iris/content/render_templates.html)
-- [Markdown to HTML](https://kataras.gitbooks.io/iris/content/render_rest.html) > `context.Markdown(statusCode int, markdown string)` , `context.MarkdownString(markdown string) (htmlReturn string)`
-- [Simplify the plugin registration](https://github.com/kataras/iris/issues/126#issuecomment-219622481)
-
-## 3.0.0-alpha.3 -> 3.0.0-alpha.4
-
-Community suggestions implemented:
-
-- [Request: Rendering html template to string](https://github.com/kataras/iris/issues/130)
-	> New RenderString(name string, binding interface{}, layout ...string) added to the Context & the Iris' station (iris.Templates().RenderString)
-- [Minify Templates](https://github.com/kataras/iris/issues/129)
-	> New config field for minify, defaulted to true: iris.Config().Render.Template.Minify  = true
-	> 3.0.0-alpha5+ this has been removed because the minify package has bugs, one of them is this: https://github.com/tdewolff/minify/issues/35.
-
-
-
-Bugfixes and enhancements:
-
-- [Static not allowing configuration of `IndexNames`](https://github.com/kataras/iris/issues/128)
-- [Processing access error](https://github.com/kataras/iris/issues/125)
-- [Invalid header](https://github.com/kataras/iris/issues/123)
-
-## 3.0.0-alpha.2 -> 3.0.0-alpha.3
-
-The only change here is a panic-fix on form bindings. Now **no need to make([]string,0)** before form binding, new example:
-
-```go
- //./main.go
-
-package main
-
-import (
-	"fmt"
-
-	"github.com/kataras/iris"
-)
-
-type Visitor struct {
-	Username string
-	Mail     string
-	Data     []string `form:"mydata"`
-}
-
-func main() {
-
-	iris.Get("/", func(ctx *iris.Context) {
-		ctx.Render("form.html", nil)
-	})
-
-	iris.Post("/form_action", func(ctx *iris.Context) {
-		visitor := Visitor{}
-		err := ctx.ReadForm(&visitor)
-		if err != nil {
-			fmt.Println("Error when reading form: " + err.Error())
-		}
-		fmt.Printf("\n Visitor: %v", visitor)
-	})
-
-	fmt.Println("Server is running at :8080")
-	iris.Listen(":8080")
-}
-
-```
-
-```html
-
-<!-- ./templates/form.html -->
-<!DOCTYPE html>
-<head>
-<meta charset="utf-8">
-</head>
-<body>
-<form action="/form_action" method="post">
-<input type="text" name="Username" />
-<br/>
-<input type="text" name="Mail" /><br/>
-<select multiple="multiple" name="mydata">
-<option value='one'>One</option>
-<option value='two'>Two</option>
-<option value='three'>Three</option>
-<option value='four'>Four</option>
-</select>
-<hr/>
-<input type="submit" value="Send data" />
-
-</form>
-</body>
-</html>
-
-```
-
-
-
-## 3.0.0-alpha.1 -> 3.0.0-alpha.2
-
-*The e-book was updated, take a closer look [here](https://www.gitbook.com/book/kataras/iris/details)*
-
-
-**Breaking changes**
-
-**First**. Configuration owns a package now `github.com/kataras/iris/config` . I took this decision after a lot of thought and I ensure you that this is the best
-architecture to easy:
-
-- change the configs without need to re-write all of their fields.
-	```go
-	irisConfig := config.Iris { Profile: true, PathCorrection: false }
-	api := iris.New(irisConfig)
-	```
-
-- easy to remember: `iris` type takes config.Iris, sessions takes config.Sessions`, `iris.Config().Render` is `config.Render`, `iris.Config().Render.Template` is `config.Template`, `Logger` takes `config.Logger` and so on...
-
-- easy to find what features are exists and what you can change: just navigate to the config folder and open the type you want to learn about, for example `/iris.go` Iris' type configuration is on `/config/iris.go`
-
-- default setted fields which you can use. They are already setted by iris, so don't worry too much, but if you ever need them you can find their default configs by this pattern: for example `config.Template` has `config.DefaultTemplate()`, `config.Rest` has `config.DefaultRest()`, `config.Typescript()` has `config.DefaultTypescript()`, note that only `config.Iris` has `config.Default()`. I wrote that all structs even the plugins have their default configs now, to make it easier for you, so you can do this without set a config by yourself: `iris.Config().Render.Template.Engine = config.PongoEngine` or `iris.Config().Render.Template.Pongo.Extensions = []string{".xhtml", ".html"}`.
-
-
-
-**Second**. Template & rest package moved to the `render`, so
-
-		*  a new config field named `render` of type `config.Render` which nests the `config.Template` & `config.Rest`
-		-  `iris.Config().Templates` -> `iris.Config().Render.Template` of type `config.Template`
-		- `iris.Config().Rest` -> `iris.Config().Render.Rest` of type `config.Rest`
-
-**Third, sessions**.
-
-
-
-Configuration instead of parameters. Before `sessions.New("memory","sessionid",time.Duration(42) * time.Minute)` -> Now:  `sessions.New(config.DefaultSessions())` of type `config.Sessions`
-
-- Before this change the cookie's life was the same as the manager's Gc duration. Now added an Expires option for the cookie's life time which defaults to infinitive, as you (correctly) suggests me in the chat community.-
-
-- Default Cookie's expiration date: from 42 minutes -> to  `infinitive/forever`
-- Manager's Gc duration: from 42 minutes -> to '2 hours'
-- Redis store's MaxAgeSeconds: from 42 minutes -> to '1 year`
-
-
-**Four**. Typescript, Editor & IrisControl plugins now accept a config.Typescript/ config.Editor/ config.IrisControl as parameter
-
-Bugfixes
-
-- [can't open /xxx/ path when PathCorrection = false ](https://github.com/kataras/iris/issues/120)
-- [Invalid content on links on debug page when custom ProfilePath is set](https://github.com/kataras/iris/issues/118)
-- [Example with custom config not working ](https://github.com/kataras/iris/issues/115)
-- [Debug Profiler writing escaped HTML?](https://github.com/kataras/iris/issues/107)
-- [CORS middleware doesn't work](https://github.com/kataras/iris/issues/108)
-
-
-
-## 2.3.2 -> 3.0.0-alpha.1
-
-**Changed**
-- `&render.Config` -> `&iris.RestConfig` . All related to the html/template are removed from there.
-- `ctx.Render("index",...)` -> `ctx.Render("index.html",...)` or any extension you have defined in iris.Config().Templates.Extensions
-- `iris.Config().Render.Layout = "layouts/layout"` -> `iris.Config().Templates.Layout = "layouts/layout.html"`
-- `License BSD-3 Clause Open source` -> `MIT License`
-**Added**
-
-- Switch template engines via `IrisConfig`. Currently, HTMLTemplate is 'html/template'. Pongo is 'flosch/pongo2`. Refer to the Book, which is updated too, [read here](https://kataras.gitbooks.io/iris/content/render.html).
+### Community
+
+ - Add github integration on https://kataras.rocket.chat/channel/iris , so users can login with their github accounts instead of creating new for the chat only.
+
+# Th, 08 June 2017 | v7.0.2
+
+- Able to set **immutable** data on sessions and context's storage. Aligned to fix an issue on slices and maps as reported [here](https://github.com/iris-contrib/community-board/issues/5).
+
+# We, 07 June 2017 | v7.0.1
+
+- Proof of concept of an internal release generator, navigate [here](https://github.com/iris-contrib/community-board/issues/2) to read more. 
+- Remove tray icon "feature", click [here](https://github.com/iris-contrib/community-board/issues/1) to learn why.
+
+# Sa, 03 June 2017 
+
+After 2+ months of hard work and collaborations, Iris [version 7](https://github.com/kataras/iris) was published earlier today.
+
+If you're new to Iris you don't have to read all these, just navigate to the [updated examples](https://github.com/kataras/iris/tree/master/_examples) and you should be fine:)
+
+Note that this section will not
+cover the internal changes, the difference is so big that anybody can see them with a glimpse, even the code structure itself.
+
+
+## Changes from [v6](https://github.com/kataras/iris/tree/v6)
+
+The whole framework was re-written from zero but I tried to keep the most common public API that iris developers use.
+
+Vendoring /w update 
+
+The previous vendor action for v6 was done by-hand, now I'm using the [go dep](https://github.com/golang/dep) tool, I had to do
+some small steps:
+
+- remove files like testdata to reduce the folder size
+- rollback some of the "golang/x/net/ipv4" and "ipv6" source files because they are downloaded to their latest versions
+by go dep, but they had lines with the `typealias` feature, which is not ready by current golang version (it will be on August)
+- fix "cannot use internal package" at golang/x/net/ipv4 and ipv6 packages
+	- rename the interal folder to was-internal, everywhere and fix its references.
+- fix "main redeclared in this block"
+	- remove all examples folders.
+- remove main.go files on jsondiff lib, used by gavv/httpexpect, produces errors on `test -v ./...` while jd and jp folders are not used at all.
+
+The go dep tool does what is says, as expected, don't be afraid of it now.
+I am totally recommending this tool for package authors, even if it's in its alpha state.
+I remember when Iris was in its alpha state and it had 4k stars on its first weeks/or month and that helped me a lot to fix reported bugs by users and make the framework even better, so give love to go dep from today!
+
+General
+
+- Several enhancements for the typescript transpiler, view engine, websocket server and sessions manager
+- All `Listen` methods replaced with a single `Run` method, see [here](https://github.com/kataras/iris/tree/master/_examples/beginner/listening)
+- Configuration, easier to modify the defaults, see [here](https://github.com/kataras/iris/tree/master/_examples/beginner/cofiguration)
+- `HandlerFunc` removed, just `Handler` of `func(context.Context)` where context.Context derives from `import "github.com/kataras/iris/context"` (on August this import path will be optional)
+    - Simplify API, i.e: instead of `Handle,HandleFunc,Use,UseFunc,Done,DoneFunc,UseGlobal,UseGlobalFunc` use `Handle,Use,Done,UseGlobal`.
+- Response time decreased even more (9-35%, depends on the application)
+- The `Adaptors` idea replaced with a more structural design pattern, but you have to apply these changes: 
+    - `app.Adapt(view.HTML/Pug/Amber/Django/Handlebars...)` -> `app.AttachView(view.HTML/Pug/Amber/Django/Handlebars...)` 
+    - `app.Adapt(sessions.New(...))` -> `app.AttachSessionManager(sessions.New(...))`
+    - `app.Adapt(iris.LoggerPolicy(...))` -> `app.AttachLogger(io.Writer)`
+    - `app.Adapt(iris.RenderPolicy(...))` -> removed and replaced with the ability to replace the whole context with a custom one or override some methods of it, see below.
+
+Routing
+- Remove of multiple routers, now we have the fresh Iris router which is based on top of the julien's [httprouter](https://github.com/julienschmidt/httprouter).
+    > Update 11 June 2017: As of 7.0.5 this is changed, read [here](https://github.com/kataras/iris/blob/master/HISTORY.md#su-11-june-2017--v705).
+- Subdomains routing algorithm has been improved.
+- Iris router is using a custom interpreter with parser and path evaluator to achieve the best expressiveness, with zero performance loss, you ever seen so far, i.e: 
+    - `app.Get("/", "/users/{userid:int min(1)}", handler)`,
+        - `{username:string}` or just `{username}`
+        - `{asset:path}`,
+        - `{firstname:alphabetical}`,
+        - `{requestfile:file}` ,
+        - `{mylowercaseParam regexp([a-z]+)}`.
+        - The previous syntax of `:param` and `*param` still working as expected. Previous rules for paths confliction remain as they were.
+            - Also, path parameter names should be only alphabetical now, numbers and symbols are not allowed (for your own good, I have seen a lot the last year...).
+
+Click [here](https://github.com/kataras/iris/tree/master/_examples/beginner/routing) for details.
+> It was my first attempt/experience on the interpreters field, so be good with it :)
+
+Context
+- `iris.Context pointer` replaced with `context.Context interface` as we already mention
+    - in order to be able to use a custom context and/or catch lifetime like `BeginRequest` and `EndRequest` from context itself, see below
+- `context.JSON, context.JSONP, context.XML, context.Markdown, context.HTML` work faster
+- `context.Render("filename.ext", bindingViewData{}, options) ` -> `context.View("filename.ext")`
+    - `View` renders only templates, it will not try to search if you have a restful renderer adapted, because, now, you can do it via method overriding using a custom Context.
+    - Able to set `context.ViewData` and `context.ViewLayout` via middleware when executing a template.
+- `context.SetStatusCode(statusCode)` -> `context.StatusCode(statusCode)`
+    - which is equivalent with the old `EmitError` too:
+        - if status code >=400 given can automatically fire a custom http error handler if response wasn't written already.
+    - `context.StatusCode()` -> `context.GetStatusCode()`
+    - `app.OnError` -> `app.OnErrorCode`
+    - Errors per party are removed by-default, you can just use one global error handler with logic like "if path starts with 'prefix' fire this error handler, else...". 
+- Easy way to change Iris' default `Context` with a custom one, see [here](https://github.com/kataras/iris/tree/master/_examples/intermediate/custom-context)
+- `context.ResponseWriter().SetBeforeFlush(...)` works for Flush and HTTP/2 Push, respectfully
+- Several improvements under the `Request transactions` 
+- Remember that you had to set a status code on each of the render-relative methods? Now it's not required, it just renders
+with the status code that user gave with `context.StatusCode` or with `200 OK`, i.e:
+    -`context.JSON(iris.StatusOK, myJSON{})` -> `context.JSON(myJSON{})`.
+    - Each one of the context's render methods has optional per-call settings,
+    - **the new API is even more easier to read, understand and use.**
+
+Server
+- Able to set custom underline *http.Server(s) with new Host (aka Server Supervisor) feature 
+    - `Done` and `Err` channels to catch shutdown or any errors on custom hosts,
+    - Schedule custom tasks(with cancelation) when server is running, see [here](https://github.com/kataras/iris/tree/master/_examples/intermediate/graceful-shutdown)
+- Interrupt handler task for gracefully shutdown (when `CTRL/CMD+C`) are enabled by-default, you can disable its via configuration: `app.Run(iris.Addr(":8080"), iris.WithoutInterruptHandler)`
+
+Future plans
+- Future Go1.9's [ServeTLS](https://go-review.googlesource.com/c/38114/2/src/net/http/server.go) is ready when 1.9 released
+- Future Go1.9's typealias feature is ready when 1.9 released, i.e `context.Context` -> `iris.Context` just one import path instead of todays' two.
